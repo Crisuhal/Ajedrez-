@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Acceso Concedido! — Biblioteca de Ajedrez</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dim: #7a5f20;
+    --black: #0a0a0a;
+    --dark2: #1a1a1a;
+    --cream: #f0e6d0;
+    --cream-dim: #a89070;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    width: 90%;
+    margin: 40px auto;
+    text-align: center;
+    padding: 48px 32px;
+    border: 1px solid var(--gold-dim);
+    background: var(--dark2);
+  }
+
+  .icono {
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 20px;
+    animation: aparecer 0.8s ease-out;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.6));
+  }
+
+  @keyframes aparecer {
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+    color: var(--gold);
+    margin-bottom: 12px;
+    animation: subir 0.6s ease-out 0.2s both;
+  }
+
+  @keyframes subir {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .subtitulo {
+    color: var(--cream-dim);
+    font-style: italic;
+    margin-bottom: 36px;
+    font-size: 1rem;
+    animation: subir 0.6s ease-out 0.4s both;
+  }
+
+  .btn-drive {
+    display: block;
+    background: var(--gold);
+    color: #000;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+    padding: 18px 32px;
+    text-decoration: none;
+    margin-bottom: 16px;
+    transition: background 0.2s, transform 0.1s;
+    animation: subir 0.6s ease-out 0.6s both;
+  }
+
+  .btn-drive:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+  }
+
+  .aviso {
+    font-size: 0.85rem;
+    color: var(--cream-dim);
+    font-style: italic;
+    margin-bottom: 32px;
+    animation: subir 0.6s ease-out 0.7s both;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #2a2a2a;
+    margin: 28px 0;
+  }
+
+  .gracias {
+    font-size: 0.9rem;
+    color: var(--cream-dim);
+    animation: subir 0.6s ease-out 0.8s both;
+  }
+
+  .gracias strong {
+    color: var(--gold-light);
+  }
+
+  .btn-wsp {
+    display: inline-block;
+    margin-top: 14px;
+    background: transparent;
+    border: 1px solid #25D366;
+    color: #25D366;
+    font-family: 'Crimson Text', serif;
+    font-size: 0.95rem;
+    padding: 10px 24px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-wsp:hover {
+    background: #25D366;
+    color: #000;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="icono">♛</div>
+
+  <h1>¡Pago confirmado!</h1>
+  <p class="subtitulo">Tu acceso a la Biblioteca de Ajedrez está listo.</p>
+
+  <a href="https://drive.google.com/drive/folders/1pxd-ARfIFv1JU85NvUUVP-Aj9jsjz0xN" 
+     class="btn-drive" target="_blank">
+    ♟ &nbsp; Abrir Biblioteca Completa &nbsp; ♟
+  </a>
+
+  <p class="aviso">Guardá este link o hacé un bookmark — es tu acceso permanente a los +70 libros.</p>
+
+  <hr class="divider">
+
+  <p class="gracias">
+    Gracias por tu compra.<br>
+    <strong>¿Alguna duda?</strong> Escribinos por WhatsApp.
+  </p>
+
+  <a href="https://wa.me/542215856713?text=Hola%2C%20acabo%20de%20comprar%20la%20Biblioteca%20de%20Ajedrez%20y%20tengo%20una%20consulta." 
+     class="btn-wsp" target="_blank">
+    💬 Contactar por WhatsApp
+  </a>
+
+</div>
+
+</body>
+</html>

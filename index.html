@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca de Ajedrez — Colección Completa</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dim: #7a5f20;
+    --black: #0a0a0a;
+    --dark: #111111;
+    --dark2: #1a1a1a;
+    --cream: #f0e6d0;
+    --cream-dim: #a89070;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Fondo tablero sutil */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+
+  .crown {
+    font-size: 52px;
+    line-height: 1;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { filter: drop-shadow(0 0 10px rgba(201,168,76,0.3)); }
+    to   { filter: drop-shadow(0 0 30px rgba(201,168,76,0.8)); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .subtitulo {
+    font-size: 1.1rem;
+    color: var(--cream-dim);
+    font-style: italic;
+    max-width: 420px;
+    margin: 0 auto 24px;
+  }
+
+  .badge {
+    display: inline-block;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* PROPUESTA */
+  .propuesta {
+    padding: 36px 0 28px;
+    border-bottom: 1px solid #222;
+  }
+
+  .propuesta p {
+    color: var(--cream);
+    margin-bottom: 14px;
+    font-size: 1.05rem;
+  }
+
+  .propuesta strong {
+    color: var(--gold-light);
+  }
+
+  /* LIBROS */
+  .libros-section {
+    padding: 36px 0 28px;
+    border-bottom: 1px solid #222;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-dim);
+    opacity: 0.4;
+  }
+
+  .libro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .libro-item {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    padding: 12px 14px;
+    border-left: 2px solid var(--gold-dim);
+    font-size: 0.9rem;
+    color: var(--cream);
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .libro-item:hover {
+    border-left-color: var(--gold);
+    background: #1e1e1e;
+  }
+
+  .libro-autor {
+    display: block;
+    color: var(--cream-dim);
+    font-size: 0.78rem;
+    font-style: italic;
+    margin-top: 3px;
+  }
+
+  .mas-libros {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 14px;
+    background: var(--dark2);
+    border: 1px dashed #333;
+    color: var(--gold-dim);
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+
+  /* PRECIO */
+  .precio-section {
+    padding: 40px 0 32px;
+    text-align: center;
+    border-bottom: 1px solid #222;
+  }
+
+  .precio-label {
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    margin-bottom: 8px;
+  }
+
+  .precio-numero {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 14vw, 5rem);
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .precio-detalle {
+    color: var(--cream-dim);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-bottom: 28px;
+  }
+
+  .btn-pago {
+    display: inline-block;
+    background: var(--gold);
+    color: #000;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    padding: 16px 40px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+  }
+
+  .btn-pago:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-pago:active {
+    transform: translateY(0);
+  }
+
+  .garantia {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: var(--cream-dim);
+    font-style: italic;
+  }
+
+  /* ACCESO */
+  .acceso-section {
+    padding: 36px 0 28px;
+    border-bottom: 1px solid #222;
+  }
+
+  .acceso-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .acceso-input {
+    background: var(--dark2);
+    border: 1px solid #333;
+    border-bottom: 2px solid var(--gold-dim);
+    color: var(--cream);
+    font-family: 'Crimson Text', serif;
+    font-size: 1rem;
+    padding: 12px 16px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+
+  .acceso-input:focus {
+    border-bottom-color: var(--gold);
+  }
+
+  .acceso-input::placeholder {
+    color: var(--cream-dim);
+    opacity: 0.5;
+  }
+
+  .btn-acceso {
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .btn-acceso:hover {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold);
+  }
+
+  .acceso-error {
+    color: #cc4444;
+    font-size: 0.88rem;
+    font-style: italic;
+    display: none;
+  }
+
+  .acceso-resultado {
+    display: none;
+    background: var(--dark2);
+    border: 1px solid var(--gold-dim);
+    border-left: 3px solid var(--gold);
+    padding: 20px;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .acceso-resultado p {
+    margin-bottom: 12px;
+    font-style: italic;
+    color: var(--cream-dim);
+  }
+
+  .btn-drive {
+    display: inline-block;
+    background: var(--gold);
+    color: #000;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    padding: 12px 28px;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  /* FAQ */
+  .faq-section {
+    padding: 36px 0 0;
+  }
+
+  .faq-item {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+
+  .faq-q {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold-light);
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
+  .faq-a {
+    color: var(--cream-dim);
+    font-size: 0.95rem;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 40px 0 20px;
+    color: #333;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    text-align: center;
+    color: var(--gold-dim);
+    font-size: 1.2rem;
+    letter-spacing: 8px;
+    padding: 20px 0;
+  }
+
+  .img-banner {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    filter: grayscale(30%) brightness(0.7);
+    border-bottom: 2px solid var(--gold-dim);
+  }
+
+  .img-duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 24px 0;
+  }
+
+  .img-duo img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    filter: grayscale(20%) brightness(0.75);
+    border: 1px solid #222;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 28px 0;
+    text-align: center;
+  }
+
+  .stat-box {
+    background: var(--dark2);
+    border: 1px solid #2a2a2a;
+    border-top: 2px solid var(--gold-dim);
+    padding: 16px 8px;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="crown">♛</div>
+    <h1>Biblioteca<br>de Ajedrez</h1>
+    <p class="subtitulo">La colección más completa en español.<br>Clásicos, táctica, estrategia y más — todo en un solo lugar.</p>
+    <span class="badge">♟ Colección Digital Completa ♟</span>
+  </header>
+
+  <!-- BANNER SVG -->
+  <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;margin-bottom:0;">
+    <defs>
+      <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0a0a0a"/>
+        <stop offset="100%" stop-color="#1a1200"/>
+      </linearGradient>
+      <linearGradient id="overlayGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#0a0a0a" stop-opacity="0.95"/>
+        <stop offset="40%" stop-color="#0a0a0a" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0.85"/>
+      </linearGradient>
+    </defs>
+    <!-- Fondo -->
+    <rect width="800" height="200" fill="url(#bgGrad)"/>
+    <!-- Tablero de ajedrez -->
+    <g opacity="0.35">
+      <script type="text/javascript"/>
+      <!-- filas del tablero -->
+      <!-- fila 0 -->
+      <rect x="400" y="0" width="50" height="50" fill="#C9A84C"/><rect x="500" y="0" width="50" height="50" fill="#C9A84C"/><rect x="600" y="0" width="50" height="50" fill="#C9A84C"/><rect x="700" y="0" width="50" height="50" fill="#C9A84C"/>
+      <rect x="450" y="0" width="50" height="50" fill="#2a1f00"/><rect x="550" y="0" width="50" height="50" fill="#2a1f00"/><rect x="650" y="0" width="50" height="50" fill="#2a1f00"/><rect x="750" y="0" width="50" height="50" fill="#2a1f00"/>
+      <!-- fila 1 -->
+      <rect x="450" y="50" width="50" height="50" fill="#C9A84C"/><rect x="550" y="50" width="50" height="50" fill="#C9A84C"/><rect x="650" y="50" width="50" height="50" fill="#C9A84C"/><rect x="750" y="50" width="50" height="50" fill="#C9A84C"/>
+      <rect x="400" y="50" width="50" height="50" fill="#2a1f00"/><rect x="500" y="50" width="50" height="50" fill="#2a1f00"/><rect x="600" y="50" width="50" height="50" fill="#2a1f00"/><rect x="700" y="50" width="50" height="50" fill="#2a1f00"/>
+      <!-- fila 2 -->
+      <rect x="400" y="100" width="50" height="50" fill="#C9A84C"/><rect x="500" y="100" width="50" height="50" fill="#C9A84C"/><rect x="600" y="100" width="50" height="50" fill="#C9A84C"/><rect x="700" y="100" width="50" height="50" fill="#C9A84C"/>
+      <rect x="450" y="100" width="50" height="50" fill="#2a1f00"/><rect x="550" y="100" width="50" height="50" fill="#2a1f00"/><rect x="650" y="100" width="50" height="50" fill="#2a1f00"/><rect x="750" y="100" width="50" height="50" fill="#2a1f00"/>
+      <!-- fila 3 -->
+      <rect x="450" y="150" width="50" height="50" fill="#C9A84C"/><rect x="550" y="150" width="50" height="50" fill="#C9A84C"/><rect x="650" y="150" width="50" height="50" fill="#C9A84C"/><rect x="750" y="150" width="50" height="50" fill="#C9A84C"/>
+      <rect x="400" y="150" width="50" height="50" fill="#2a1f00"/><rect x="500" y="150" width="50" height="50" fill="#2a1f00"/><rect x="600" y="150" width="50" height="50" fill="#2a1f00"/><rect x="700" y="150" width="50" height="50" fill="#2a1f00"/>
+    </g>
+    <!-- Overlay gradiente -->
+    <rect width="800" height="200" fill="url(#overlayGrad)"/>
+    <!-- Texto principal -->
+    <text x="60" y="90" font-family="Georgia, serif" font-size="48" font-weight="bold" fill="#C9A84C" opacity="0.95">♛</text>
+    <text x="120" y="88" font-family="Georgia, serif" font-size="36" font-weight="bold" fill="#f0e6d0">Biblioteca de</text>
+    <text x="120" y="130" font-family="Georgia, serif" font-size="44" font-weight="bold" fill="#C9A84C">Ajedrez</text>
+    <text x="60" y="170" font-family="Georgia, serif" font-size="14" fill="#a89070" font-style="italic">Más de 70 libros clásicos en español</text>
+    <!-- línea decorativa -->
+    <line x1="60" y1="100" x2="60" y2="145" stroke="#C9A84C" stroke-width="3"/>
+  </svg>
+
+  <!-- STATS -->
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-num">+70</div>
+      <div class="stat-label">Libros en español</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Acceso permanente</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">PDF</div>
+      <div class="stat-label">Celular o PC</div>
+    </div>
+  </div>
+
+  <!-- PROPUESTA -->
+  <section class="propuesta">
+    <p>Buscás material de ajedrez en español y terminás saltando de sitio en sitio, bajando cosas sueltas, sin orden. <strong>Esta colección resuelve eso.</strong></p>
+    <p><strong>Más de 70 libros y PDFs clásicos</strong> organizados en un solo acceso. Desde principiantes hasta jugadores de torneo. Lo tenés para siempre, sin publicidad, sin suscripciones.</p>
+    <p>Autores como <strong>David Bronstein, Paul Keres, Akiba Rubinstein</strong> — la bibliografía que usan los entrenadores serios.</p>
+
+    <div class="img-duo">
+      <!-- SVG Caballo -->
+      <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:140px;display:block;">
+        <rect width="200" height="140" fill="#111111"/>
+        <!-- tablero fondo -->
+        <g opacity="0.2">
+          <rect x="0" y="0" width="25" height="25" fill="#C9A84C"/><rect x="50" y="0" width="25" height="25" fill="#C9A84C"/><rect x="100" y="0" width="25" height="25" fill="#C9A84C"/><rect x="150" y="0" width="25" height="25" fill="#C9A84C"/>
+          <rect x="25" y="25" width="25" height="25" fill="#C9A84C"/><rect x="75" y="25" width="25" height="25" fill="#C9A84C"/><rect x="125" y="25" width="25" height="25" fill="#C9A84C"/><rect x="175" y="25" width="25" height="25" fill="#C9A84C"/>
+          <rect x="0" y="50" width="25" height="25" fill="#C9A84C"/><rect x="50" y="50" width="25" height="25" fill="#C9A84C"/><rect x="100" y="50" width="25" height="25" fill="#C9A84C"/><rect x="150" y="50" width="25" height="25" fill="#C9A84C"/>
+          <rect x="25" y="75" width="25" height="25" fill="#C9A84C"/><rect x="75" y="75" width="25" height="25" fill="#C9A84C"/><rect x="125" y="75" width="25" height="25" fill="#C9A84C"/><rect x="175" y="75" width="25" height="25" fill="#C9A84C"/>
+          <rect x="0" y="100" width="25" height="25" fill="#C9A84C"/><rect x="50" y="100" width="25" height="25" fill="#C9A84C"/><rect x="100" y="100" width="25" height="25" fill="#C9A84C"/><rect x="150" y="100" width="25" height="25" fill="#C9A84C"/>
+        </g>
+        <text x="100" y="95" font-family="Georgia,serif" font-size="90" fill="#C9A84C" text-anchor="middle" opacity="0.9">♞</text>
+        <text x="100" y="130" font-family="Georgia,serif" font-size="11" fill="#a89070" text-anchor="middle" font-style="italic">Táctica y combinaciones</text>
+      </svg>
+      <!-- SVG Reina -->
+      <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:140px;display:block;">
+        <rect width="200" height="140" fill="#0f0c00"/>
+        <g opacity="0.2">
+          <rect x="25" y="0" width="25" height="25" fill="#C9A84C"/><rect x="75" y="0" width="25" height="25" fill="#C9A84C"/><rect x="125" y="0" width="25" height="25" fill="#C9A84C"/><rect x="175" y="0" width="25" height="25" fill="#C9A84C"/>
+          <rect x="0" y="25" width="25" height="25" fill="#C9A84C"/><rect x="50" y="25" width="25" height="25" fill="#C9A84C"/><rect x="100" y="25" width="25" height="25" fill="#C9A84C"/><rect x="150" y="25" width="25" height="25" fill="#C9A84C"/>
+          <rect x="25" y="50" width="25" height="25" fill="#C9A84C"/><rect x="75" y="50" width="25" height="25" fill="#C9A84C"/><rect x="125" y="50" width="25" height="25" fill="#C9A84C"/><rect x="175" y="50" width="25" height="25" fill="#C9A84C"/>
+          <rect x="0" y="75" width="25" height="25" fill="#C9A84C"/><rect x="50" y="75" width="25" height="25" fill="#C9A84C"/><rect x="100" y="75" width="25" height="25" fill="#C9A84C"/><rect x="150" y="75" width="25" height="25" fill="#C9A84C"/>
+          <rect x="25" y="100" width="25" height="25" fill="#C9A84C"/><rect x="75" y="100" width="25" height="25" fill="#C9A84C"/><rect x="125" y="100" width="25" height="25" fill="#C9A84C"/><rect x="175" y="100" width="25" height="25" fill="#C9A84C"/>
+        </g>
+        <text x="100" y="95" font-family="Georgia,serif" font-size="90" fill="#E8C96A" text-anchor="middle" opacity="0.9">♛</text>
+        <text x="100" y="130" font-family="Georgia,serif" font-size="11" fill="#a89070" text-anchor="middle" font-style="italic">Estrategia y dominio</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- LIBROS -->
+  <section class="libros-section">
+    <div class="section-title">Qué incluye</div>
+    <div class="libro-grid">
+
+      <div class="libro-item">
+        Ajedrez: Descubrir, Profundizar, Dominar
+        <span class="libro-autor">Clásico de estudio integral</span>
+      </div>
+
+      <div class="libro-item">
+        El Arte del Ataque
+        <span class="libro-autor">Táctica ofensiva</span>
+      </div>
+
+      <div class="libro-item">
+        El Ajedrez de Torneo — Zurich 1953
+        <span class="libro-autor">David Bronstein</span>
+      </div>
+
+      <div class="libro-item">
+        El Camino hacia la Cumbre
+        <span class="libro-autor">Paul Keres</span>
+      </div>
+
+      <div class="libro-item">
+        El Arte de Maniobrar con las Piezas
+        <span class="libro-autor">Estrategia posicional</span>
+      </div>
+
+      <div class="libro-item">
+        Akiba Rubinstein — Campeón sin Corona
+        <span class="libro-autor">Biografía y partidas</span>
+      </div>
+
+      <div class="libro-item">
+        Táctica: La Base de una Teoría de Combinaciones
+        <span class="libro-autor">83 páginas de combinaciones</span>
+      </div>
+
+      <div class="libro-item">
+        50 Problemas Avanzados de Mates
+        <span class="libro-autor">Para jugadores experimentados</span>
+      </div>
+
+      <div class="libro-item">
+        Ajedrez en los Ochenta
+        <span class="libro-autor">Historia y análisis</span>
+      </div>
+
+      <div class="libro-item">
+        Aprendizaje de Ajedrez
+        <span class="libro-autor">Método pedagógico</span>
+      </div>
+
+      <div class="mas-libros">
+        ♟ + 60 libros más incluidos en la colección ♟
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider">— ♔ —</div>
+
+  <!-- PRECIO -->
+  <section class="precio-section">
+    <p class="precio-label">Precio único</p>
+    <div class="precio-numero">$3.500</div>
+    <p class="precio-detalle">Pesos argentinos · pago único · acceso permanente</p>
+    <a href="https://mpago.la/2SF97kF" class="btn-pago" target="_blank">
+      ♟ &nbsp; Pagar con Mercado Pago &nbsp; ♟
+    </a>
+    <p class="garantia">Tras el pago serás redirigido automáticamente a tu acceso.</p>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section">
+    <div class="section-title">Preguntas</div>
+
+    <div class="faq-item">
+      <p class="faq-q">¿En qué formato son los libros?</p>
+      <p class="faq-a">Todos en PDF, listos para leer desde el celular, tablet o computadora. Sin DRM, sin restricciones.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">¿Cuándo recibo el acceso?</p>
+      <p class="faq-a">Apenas confirmado el pago, Mercado Pago te redirige automáticamente a la página de acceso con tu biblioteca lista.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">¿Se puede compartir?</p>
+      <p class="faq-a">El acceso es personal. Si querés compartirlo con alguien, podés regalarle su propia copia.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">¿Tengo que descargar algo?</p>
+      <p class="faq-a">No. Todo queda en la nube. Podés ver los libros directo desde el navegador o descargarlos si preferís.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">¿Problemas con el acceso?</p>
+      <p class="faq-a">Escribinos por <a href="https://wa.me/542215856713?text=Hola%2C%20tuve%20un%20problema%20accediendo%20a%20la%20Biblioteca%20de%20Ajedrez." style="color: var(--gold);" target="_blank">WhatsApp</a> y lo resolvemos enseguida.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  ♟ Biblioteca de Ajedrez &nbsp;·&nbsp; Colección Digital &nbsp;·&nbsp; Argentina ♟
+</footer>
+
+<script></script>
+
+</body>
+</html>
